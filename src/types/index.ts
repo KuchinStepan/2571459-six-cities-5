@@ -53,7 +53,7 @@ export interface OfferInput {
   postDate: string;
   city: City;
   previewImage: string;
-  photos: string[6];
+  photos: Array<string>; // 6
   isPremium: boolean;
   isFavorite: boolean;
   rating: number; // 1..5
