@@ -1,0 +1,23 @@
+export const COLUMN_NAMES = [
+  'title',
+  'description',
+  'post_date',
+  'city',
+  'preview_image',
+  'photos',
+  'is_premium',
+  'is_favorite',
+  'rating',
+  'type',
+  'rooms',
+  'guests',
+  'price',
+  'goods',
+  'author_email',
+  'author_name',
+  'author_avatar',
+  'author_password',
+  'author_type',
+  'latitude',
+  'longitude'
+] as const;

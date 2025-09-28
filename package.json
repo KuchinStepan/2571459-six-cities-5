@@ -14,10 +14,11 @@
     "lint": "eslint src/ --ext .ts",
     "compile": "tsc -p tsconfig.json",
     "clean": "rimraf dist",
-    "ts": "ts-node"
+    "ts": "ts-node",
+    "cli": "npm run build && node dist/cli/cli.js"
   },
   "devDependencies": {
-    "@types/node": "18.16.3",
+    "@types/node": "20.11.0",
     "@typescript-eslint/eslint-plugin": "5.46.0",
     "@typescript-eslint/parser": "5.46.0",
     "eslint": "8.39.0",
