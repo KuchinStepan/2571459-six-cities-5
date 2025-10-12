@@ -1,4 +1,4 @@
-import {OfferInput} from "../types";
+import {OfferInput} from '../types';
 
 export function parseBool(value: string): boolean {
   return ['true', '1', 'yes'].includes(value.toLowerCase());
