@@ -15,7 +15,7 @@ export class ImportCommand implements ICommand {
 
     if (!argv[1]) {
       console.error(chalk.red('Missing file path.'));
-      process.exit(1);
+      throw new Error('Missing file path.');
     }
     importTsv(argv[1]);
   }
@@ -27,7 +27,7 @@ function importTsv(filePath: string): void {
   const absolute = path.resolve(process.cwd(), filePath);
   if (!fs.existsSync(absolute)) {
     console.error(chalk.red('File not found:'), absolute);
-    process.exit(2);
+    throw new Error('File not found');
   }
   const content = fs.readFileSync(absolute, 'utf8');
   const lines = content.split(/\r?\n/).filter(Boolean);
