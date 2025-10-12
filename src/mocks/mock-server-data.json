@@ -1,0 +1,154 @@
+{
+  "offers": [
+    {
+      "id": 1,
+      "title": "Cozy apartment in Paris center",
+      "description": "Bright and comfortable apartment with balcony near Louvre. Ideal for couples.",
+      "city": "Paris",
+      "previewImage": "https://example.com/previews/paris1.jpg",
+      "images": [
+        "https://example.com/photos/paris1-1.jpg",
+        "https://example.com/photos/paris1-2.jpg",
+        "https://example.com/photos/paris1-3.jpg",
+        "https://example.com/photos/paris1-4.jpg",
+        "https://example.com/photos/paris1-5.jpg",
+        "https://example.com/photos/paris1-6.jpg"
+      ],
+      "isPremium": true,
+      "isFavorite": false,
+      "rating": 4.8,
+      "type": "apartment",
+      "rooms": 3,
+      "guests": 4,
+      "price": 220,
+      "goods": ["Washer", "Fridge", "Towels"],
+      "user": {
+        "name": "Alice",
+        "email": "alice@example.com",
+        "avatar": "https://example.com/avatars/alice.jpg",
+        "type": "pro"
+      },
+      "location": { "latitude": 48.85661, "longitude": 2.351499 }
+    },
+    {
+      "id": 2,
+      "title": "Canal view apartment in Amsterdam",
+      "description": "Spacious flat with a great canal view and close to central station.",
+      "city": "Amsterdam",
+      "previewImage": "https://example.com/previews/amsterdam1.jpg",
+      "images": [
+        "https://example.com/photos/ams1-1.jpg",
+        "https://example.com/photos/ams1-2.jpg",
+        "https://example.com/photos/ams1-3.jpg",
+        "https://example.com/photos/ams1-4.jpg",
+        "https://example.com/photos/ams1-5.jpg",
+        "https://example.com/photos/ams1-6.jpg"
+      ],
+      "isPremium": false,
+      "isFavorite": true,
+      "rating": 4.2,
+      "type": "house",
+      "rooms": 4,
+      "guests": 6,
+      "price": 340,
+      "goods": ["Breakfast", "Air conditioning", "Washer"],
+      "user": {
+        "name": "Bob",
+        "email": "bob@example.com",
+        "avatar": "https://example.com/avatars/bob.png",
+        "type": "ordinary"
+      },
+      "location": { "latitude": 52.370216, "longitude": 4.895168 }
+    },
+    {
+      "id": 3,
+      "title": "Modern studio near Cologne Cathedral",
+      "description": "Stylish studio apartment in the city center of Cologne.",
+      "city": "Cologne",
+      "previewImage": "https://example.com/previews/cologne1.jpg",
+      "images": [
+        "https://example.com/photos/cologne1-1.jpg",
+        "https://example.com/photos/cologne1-2.jpg",
+        "https://example.com/photos/cologne1-3.jpg",
+        "https://example.com/photos/cologne1-4.jpg",
+        "https://example.com/photos/cologne1-5.jpg",
+        "https://example.com/photos/cologne1-6.jpg"
+      ],
+      "isPremium": false,
+      "isFavorite": false,
+      "rating": 4.0,
+      "type": "room",
+      "rooms": 1,
+      "guests": 2,
+      "price": 120,
+      "goods": ["Towels", "Fridge"],
+      "user": {
+        "name": "Charlie",
+        "email": "charlie@example.com",
+        "avatar": "https://example.com/avatars/charlie.png",
+        "type": "ordinary"
+      },
+      "location": { "latitude": 50.938361, "longitude": 6.959974 }
+    },
+    {
+      "id": 4,
+      "title": "Loft in Brussels old town",
+      "description": "Charming loft in a renovated building near Grand Place.",
+      "city": "Brussels",
+      "previewImage": "https://example.com/previews/brussels1.jpg",
+      "images": [
+        "https://example.com/photos/brussels1-1.jpg",
+        "https://example.com/photos/brussels1-2.jpg",
+        "https://example.com/photos/brussels1-3.jpg",
+        "https://example.com/photos/brussels1-4.jpg",
+        "https://example.com/photos/brussels1-5.jpg",
+        "https://example.com/photos/brussels1-6.jpg"
+      ],
+      "isPremium": true,
+      "isFavorite": true,
+      "rating": 4.9,
+      "type": "hotel",
+      "rooms": 5,
+      "guests": 8,
+      "price": 500,
+      "goods": ["Breakfast", "Baby seat", "Air conditioning"],
+      "user": {
+        "name": "Diana",
+        "email": "diana@example.com",
+        "avatar": "https://example.com/avatars/diana.jpg",
+        "type": "pro"
+      },
+      "location": { "latitude": 50.846557, "longitude": 4.351697 }
+    },
+    {
+      "id": 5,
+      "title": "Quiet house in Hamburg suburb",
+      "description": "Large family house with garden, perfect for weekend trips.",
+      "city": "Hamburg",
+      "previewImage": "https://example.com/previews/hamburg1.jpg",
+      "images": [
+        "https://example.com/photos/hamburg1-1.jpg",
+        "https://example.com/photos/hamburg1-2.jpg",
+        "https://example.com/photos/hamburg1-3.jpg",
+        "https://example.com/photos/hamburg1-4.jpg",
+        "https://example.com/photos/hamburg1-5.jpg",
+        "https://example.com/photos/hamburg1-6.jpg"
+      ],
+      "isPremium": false,
+      "isFavorite": false,
+      "rating": 4.1,
+      "type": "house",
+      "rooms": 3,
+      "guests": 5,
+      "price": 260,
+      "goods": ["Washer", "Fridge", "Towels"],
+      "user": {
+        "name": "Eve",
+        "email": "eve@example.com",
+        "avatar": "https://example.com/avatars/eve.png",
+        "type": "ordinary"
+      },
+      "location": { "latitude": 53.550341, "longitude": 10.000654 }
+    }
+  ]
+}
