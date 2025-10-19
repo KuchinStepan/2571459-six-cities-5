@@ -1,9 +1,11 @@
 import {Logger} from './helpers/logger/logger.js';
+import {config} from './config/config.js';
 
 export class Application {
   constructor(private readonly logger: Logger) {}
 
   public async init(): Promise<void> {
-    this.logger.info('Application initialized successfully!');
+    const port = config.get('port');
+    this.logger.info(`Application initialized successfully! Port: ${port}`);
   }
 }
