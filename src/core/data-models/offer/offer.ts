@@ -1,7 +1,8 @@
 import { getModelForClass, prop, Ref } from '@typegoose/typegoose';
-import {City, CityValues, Coordinates, Good, GoodValues, OfferType, OfferTypeValues} from '../../../types/index.js';
+import {City, CityValues, Good, GoodValues, OfferType, OfferTypeValues} from '../../../types/index.js';
 import {UserEntity} from '../user/user.js';
 import {Document} from 'mongoose';
+import {CoordinatesEntity} from './CoordinatesEntity.js';
 
 export class OfferEntity extends Document {
   @prop({ required: true, minlength: 10, maxlength: 100 })
@@ -52,8 +53,8 @@ export class OfferEntity extends Document {
   @prop({ required: true, default: 0 })
   public commentsCount!: number;
 
-  @prop({ required: true, type: () => ({ latitude: Number, longitude: Number }) })
-  public coordinates!: Coordinates;
+  @prop({ required: true, type: () => CoordinatesEntity })
+  public coordinates!: CoordinatesEntity;
 }
 
 export const OfferModel = getModelForClass(OfferEntity, {

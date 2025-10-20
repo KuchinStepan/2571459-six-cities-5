@@ -14,7 +14,7 @@ export class DatabaseClient {
   public async connect(): Promise<void> {
     const uri = this.config.mongoUri;
 
-    this.logger.info(`Attempting to connect to the database: ${uri}`);
+    this.logger.info(`Attempting to connect to the database: ${this.config.dbName}`);
 
     try {
       await mongoose.connect(uri);
