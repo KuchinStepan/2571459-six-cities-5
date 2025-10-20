@@ -91,6 +91,11 @@ npm run cli -- --version
 npm run cli -- --import <Путь до файла>
 ```
 
+Пример запуска с записью в базу данных
+```bash
+ npm run cli -- --import src/mocks/offers.tsv mongodb://admin:test@127.0.0.1:27017/six-cities?authSource=admin
+```
+
 
 ## Структура проекта
 
