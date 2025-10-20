@@ -21,8 +21,8 @@
   },
   "devDependencies": {
     "@types/convict-format-with-validator": "6.0.5",
-    "@types/inversify": "^2.0.33",
-    "@types/node": "^20.19.22",
+    "@types/inversify": "2.0.33",
+    "@types/node": "20.19.22",
     "@typescript-eslint/eslint-plugin": "5.46.0",
     "@typescript-eslint/parser": "5.46.0",
     "eslint": "8.39.0",
@@ -43,8 +43,8 @@
     "convict": "6.2.4",
     "convict-format-with-validator": "6.2.0",
     "dotenv": "17.2.3",
-    "inversify": "^7.10.3",
+    "inversify": "7.10.3",
     "pino": "10.1.0",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "0.2.2"
   }
 }
