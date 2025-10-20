@@ -12,10 +12,13 @@ import {
 } from '../../types/index.js';
 import { COLUMN_NAMES } from '../column-names.js';
 import { parseBool, parseNumber, validateOffer } from '../cli-helpers.js';
+import mongoose from 'mongoose';
+import { OfferModel } from '../../core/data-models/offer/offer.js';
+import { UserModel } from '../../core/data-models/user/user.js';
 
 export class ImportCommand implements ICommand {
   readonly name = '--import';
-  readonly description = '  --import <file> Import offers from a .tsv file and print the result';
+  readonly description = '  --import <file> <mongo-uri> Import offers from TSV and save them to MongoDB';
 
   async invoke(): Promise<void> {
     const argv = process.argv.slice(2);
@@ -24,19 +27,34 @@ export class ImportCommand implements ICommand {
       console.error(chalk.red('Missing file path.'));
       return;
     }
+    if (!argv[2]) {
+      console.error(chalk.red('Missing MongoDB connection URI.'));
+      return;
+    }
 
-    const filePath = argv[1];
-    await importTsvStream(filePath);
+    const [filePath, mongoUri] = [argv[1], argv[2]];
+
+    await importTsvStream(filePath, mongoUri);
   }
 }
 
 type ColumnName = typeof COLUMN_NAMES[number];
 
-async function importTsvStream(filePath: string): Promise<void> {
+async function importTsvStream(filePath: string, mongoUri: string): Promise<void> {
   const absolute = path.resolve(process.cwd(), filePath);
 
   if (!fs.existsSync(absolute)) {
     console.error(chalk.red(`File not found: ${absolute}`));
+    return;
+  }
+
+  console.log(chalk.blue('Connecting to MongoDB...'));
+
+  try {
+    await mongoose.connect(mongoUri);
+    console.log(chalk.green('Connected to MongoDB'));
+  } catch (err) {
+    console.error(chalk.red(`MongoDB connection error: ${(err as Error).message}`));
     return;
   }
 
@@ -47,11 +65,10 @@ async function importTsvStream(filePath: string): Promise<void> {
   let success = 0;
   let failed = 0;
 
-  console.log(chalk.blue(`📥 Starting import from ${filePath} ...`));
+  console.log(chalk.blue(`Starting import from ${filePath} ...`));
 
   for await (const line of rl) {
     lineNumber++;
-
     if (!line.trim()) {
       continue;
     }
@@ -87,24 +104,40 @@ async function importTsvStream(filePath: string): Promise<void> {
         authorEmail: data.author_email,
         coordinates: {
           latitude: parseFloat(data.latitude),
-          longitude: parseFloat(data.longitude)
-        }
+          longitude: parseFloat(data.longitude),
+        },
       };
 
       const errs = validateOffer(offer);
       if (errs.length > 0) {
         console.error(chalk.red(`Line ${lineNumber} validation errors:`), errs.join(', '));
         failed++;
-      } else {
-        success++;
-        console.log(JSON.stringify(offer, null, 2));
+        continue;
       }
+
+      let author = await UserModel.findOne({ email: offer.authorEmail });
+      if (!author) {
+        author = await UserModel.create({
+          name: data.author_name || 'Anonymous',
+          email: offer.authorEmail,
+          avatar: data.author_avatar,
+          password: data.author_password || 'test123',
+          type: (data.author_type as 'ordinary' | 'pro') || 'ordinary',
+        });
+      }
+
+      await OfferModel.create({
+        ...offer,
+        author: author._id,
+      });
+
+      success++;
     } catch (err) {
-      console.error(chalk.red(`Line ${lineNumber}: failed to parse (${(err as Error).message})`));
+      console.error(chalk.red(`Line ${lineNumber}: failed to save (${(err as Error).message})`));
       failed++;
     }
 
-    if (lineNumber % 10000 === 0) {
+    if (lineNumber % 1000 === 0) {
       console.log(chalk.gray(`Processed ${lineNumber} lines...`));
     }
   }
@@ -112,4 +145,7 @@ async function importTsvStream(filePath: string): Promise<void> {
   console.log(chalk.blue.bold('\nImport finished!'));
   console.log(chalk.green(`  Successful: ${success}`));
   console.log(chalk.red(`  Failed: ${failed}`));
+
+  await mongoose.disconnect();
+  console.log(chalk.gray('MongoDB disconnected.'));
 }
