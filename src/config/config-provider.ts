@@ -24,7 +24,7 @@ export class ConfigProvider {
   }
 
   get dbUser() {
-    return config.get('dbPassword');
+    return config.get('dbUser');
   }
 
   get salt() {
