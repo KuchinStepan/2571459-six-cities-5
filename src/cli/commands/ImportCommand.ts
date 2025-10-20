@@ -115,7 +115,6 @@ async function importTsvStream(filePath: string, mongoUri: string): Promise<void
         continue;
       }
 
-      // Проверяем, есть ли пользователь
       let author = await UserModel.findOne({ email: offer.authorEmail });
       if (!author) {
         author = await UserModel.create({
