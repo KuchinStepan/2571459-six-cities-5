@@ -1,11 +1,23 @@
 import {Logger} from './helpers/logger/logger.js';
-import {config} from './config/config.js';
+import {inject, injectable} from 'inversify';
+import {ConfigProvider} from './config/config-provider.js';
 
+export const TYPES = {
+  Application: Symbol.for('Application'),
+  Logger: Symbol.for('Logger'),
+  ConfigProvider: Symbol.for('ConfigProvider'),
+} as const;
+
+@injectable()
 export class Application {
-  constructor(private readonly logger: Logger) {}
+  constructor(
+    @inject(TYPES.Logger) private readonly logger: Logger,
+    @inject(TYPES.ConfigProvider) private readonly config: ConfigProvider
+  ) {}
 
   public async init(): Promise<void> {
-    const port = config.get('port');
+    const port = this.config.port;
     this.logger.info(`Application initialized successfully! Port: ${port}`);
   }
 }
+

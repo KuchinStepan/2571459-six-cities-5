@@ -1,6 +1,8 @@
 import pino from 'pino';
 import {ILogger} from './ILogger.js';
+import {injectable} from 'inversify';
 
+@injectable()
 export class Logger implements ILogger {
   private readonly logger = pino({
     transport: {

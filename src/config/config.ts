@@ -9,7 +9,7 @@ dotenv.config();
 export type AppConfig = {
   port: number;
   dbHost: string;
-  apiKey: string;
+  salt: string;
 };
 
 export const config = convict<AppConfig>({
@@ -25,11 +25,11 @@ export const config = convict<AppConfig>({
     default: '127.0.0.1',
     env: 'DB_HOST'
   },
-  apiKey: {
-    doc: 'Api ключ',
+  salt: {
+    doc: 'Соль (строка со случайным набором символом)',
     format: String,
     default: null as unknown as string,
-    env: 'API_KEY'
+    env: 'SALT'
   }
 });
 

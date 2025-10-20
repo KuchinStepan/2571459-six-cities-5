@@ -1,7 +1,6 @@
-import {Application} from './application.js';
-import {Logger} from './helpers/logger/logger.js';
+import {Application, TYPES} from './application.js';
+import {container} from './autofac.js';
 
-const logger = new Logger();
-const app = new Application(logger);
+const app = container.get<Application>(TYPES.Application);
 await app.init();
 
