@@ -9,6 +9,7 @@ import {UserModel} from './core/data-models/user/user.js';
 import {OfferModel} from './core/data-models/offer/offer.js';
 import {UserRepository} from './core/data-models/user/UserRepository.js';
 import {OfferRepository} from './core/data-models/offer/OfferRepository.js';
+import {CommentRepository} from './core/data-models/comment/CommentRepository.js';
 
 const container = new Container();
 
@@ -22,5 +23,6 @@ container.bind(TYPES.OfferModel).toConstantValue(OfferModel);
 
 container.bind<UserRepository>(TYPES.UserRepository).to(UserRepository).inSingletonScope();
 container.bind<OfferRepository>(TYPES.OfferRepository).to(OfferRepository).inSingletonScope();
+container.bind<CommentRepository>(TYPES.CommentRepository).to(CommentRepository).inSingletonScope();
 
 export { container };

@@ -6,7 +6,9 @@ export const TYPES = {
 
   UserRepository: Symbol.for('UserRepository'),
   OfferRepository: Symbol.for('OfferRepository'),
+  CommentRepository: Symbol.for('CommentRepository'),
 
   UserModel: Symbol.for('UserModel'),
   OfferModel: Symbol.for('OfferModel'),
+  CommentModel: Symbol.for('CommentModel'),
 } as const;
