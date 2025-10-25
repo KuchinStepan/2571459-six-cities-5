@@ -24,6 +24,7 @@ export class CommentService {
     });
 
     await this.offerService.recalculateCommentsCount(dto.offerId);
+    await this.offerService.recalculateRating(dto.offerId);
 
     return comment;
   }

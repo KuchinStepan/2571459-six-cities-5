@@ -20,6 +20,7 @@ export class OfferService {
       ...dto,
       author: dto.authorId,
       commentsCount: 0,
+      rating: 0
     });
   }
 
@@ -50,5 +51,18 @@ export class OfferService {
   public async recalculateCommentsCount(offerId: string): Promise<void> {
     const count = await this.commentRepository.model.countDocuments({ offer: offerId });
     await this.offerRepository.updateById(offerId, { commentsCount: count });
+  }
+
+  public async recalculateRating(offerId: string): Promise<void> {
+    const comments = await this.commentRepository.model.find({ offer: offerId }).select('rating');
+    if (comments.length === 0) {
+      await this.offerRepository.updateById(offerId, { rating: 0 });
+      return;
+    }
+
+    const avgRating = comments.reduce((sum, c) => sum + c.rating, 0) / comments.length;
+    const rounded = Math.round(avgRating * 10) / 10;
+
+    await this.offerRepository.updateById(offerId, { rating: rounded });
   }
 }
