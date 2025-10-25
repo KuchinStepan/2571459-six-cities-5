@@ -13,4 +13,12 @@ export class OfferRepository extends BaseRepository<OfferEntity> implements IOff
     const offers = await this.model.find({ city }).exec();
     return offers.map((o) => o.toObject());
   }
+
+  public async findPremium(city: string): Promise<OfferEntity[]> {
+    return this.model.find({ city, isPremium: true }).limit(3).sort({ postDate: -1 }).exec();
+  }
+
+  public async findFavorites(): Promise<OfferEntity[]> {
+    return this.model.find({ isFavorite: true }).exec();
+  }
 }
