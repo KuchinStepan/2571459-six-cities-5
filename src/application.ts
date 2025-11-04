@@ -5,9 +5,11 @@ import { DatabaseClient } from './core/database-client.js';
 import { TYPES } from './autofac-types.js';
 
 import express, { Application as ExpressApp, Request, Response, NextFunction } from 'express';
-import { Server } from 'http';
+import { Server } from 'node:http';
 import { StatusCodes, getReasonPhrase } from 'http-status-codes';
 import expressAsyncHandler from 'express-async-handler';
+import {OfferController} from './controller/implementation/OfferController.js';
+import {UserController} from './controller/implementation/UserController.js';
 
 @injectable()
 export class Application {
@@ -37,6 +39,17 @@ export class Application {
       })
     );
 
+    const userController = new UserController();
+    const offerController = new OfferController();
+
+    this.expressApp.use(`/api${ userController.path}`, userController.router);
+    this.expressApp.use(`/api${ offerController.path}`, offerController.router);
+
+    this.expressApp.get(
+      '/api/premium/:city',
+      expressAsyncHandler(offerController.getPremiumByCity.bind(offerController))
+    );
+
     this.expressApp.use((_req: Request, res: Response) => {
       res.status(StatusCodes.NOT_FOUND).json({
         error: getReasonPhrase(StatusCodes.NOT_FOUND)
@@ -44,9 +57,37 @@ export class Application {
     });
 
     this.expressApp.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
-      this.logger.error('Unhandled error', err as Error);
-      const status = (err && typeof (err as any).status === 'number') ? (err as any).status : StatusCodes.INTERNAL_SERVER_ERROR;
-      const message = (err && (err as any).message) ? (err as any).message : getReasonPhrase(status);
+      try {
+        if (err instanceof Error) {
+          this.logger.error('Unhandled error', err);
+        } else {
+          this.logger.error('Unhandled error (non-error throwable)', new Error(String(err)));
+        }
+      } catch {
+        console.error('Failed to log error', err);
+      }
+
+      const defaultStatus = StatusCodes.INTERNAL_SERVER_ERROR;
+
+      let status = defaultStatus;
+      let message = getReasonPhrase(defaultStatus);
+
+      if (typeof err === 'object' && err !== null) {
+        const maybeErr = err as { status?: unknown; message?: unknown };
+        if (typeof maybeErr.status === 'number') {
+          status = maybeErr.status;
+        }
+        if (typeof maybeErr.message === 'string') {
+          message = maybeErr.message;
+        }
+      } else if (typeof err === 'string') {
+        message = err;
+      }
+
+      if (!Number.isInteger(status) || status < 100 || status > 599) {
+        status = defaultStatus;
+      }
+
       res.status(status).json({ error: message });
     });
 
@@ -62,7 +103,11 @@ export class Application {
       await this.dbClient.connect();
       this.logger.info('Application: database connected');
     } catch (err) {
-      this.logger.error('Application: failed to connect to database', err as Error);
+      if (err instanceof Error) {
+        this.logger.error('Application: failed to connect to database', err);
+      } else {
+        this.logger.error('Application: failed to connect to database', new Error(String(err)));
+      }
       throw err;
     }
 
@@ -87,27 +132,43 @@ export class Application {
           this.logger.info('HTTP server closed');
         }
       } catch (err) {
-        this.logger.error('Error while closing HTTP server', err as Error);
+        if (err instanceof Error) {
+          this.logger.error('Error while closing HTTP server', err);
+        } else {
+          this.logger.error('Error while closing HTTP server', new Error(String(err)));
+        }
       }
 
       try {
         await this.dbClient.disconnect();
         this.logger.info('Database disconnected');
       } catch (err) {
-        this.logger.error('Error while disconnecting database', err as Error);
+        if (err instanceof Error) {
+          this.logger.error('Error while disconnecting database', err);
+        } else {
+          this.logger.error('Error while disconnecting database', new Error(String(err)));
+        }
       } finally {
-        process.exit(0);
+        // process.exit(0);
       }
     };
 
-    process.on('SIGINT', () => shutdown('SIGINT'));
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => void shutdown('SIGINT'));
+    process.on('SIGTERM', () => void shutdown('SIGTERM'));
     process.on('uncaughtException', async (err) => {
-      this.logger.error('Uncaught exception, shutting down', err as Error);
+      if (err instanceof Error) {
+        this.logger.error('Uncaught exception, shutting down', err);
+      } else {
+        this.logger.error('Uncaught exception (non-error), shutting down', new Error(String(err)));
+      }
       await shutdown('uncaughtException');
     });
     process.on('unhandledRejection', async (reason) => {
-      this.logger.error('Unhandled rejection, shutting down', reason as Error);
+      if (reason instanceof Error) {
+        this.logger.error('Unhandled rejection, shutting down', reason);
+      } else {
+        this.logger.error('Unhandled rejection (non-error), shutting down', new Error(String(reason)));
+      }
       await shutdown('unhandledRejection');
     });
   }
