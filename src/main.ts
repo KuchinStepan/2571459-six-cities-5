@@ -9,7 +9,7 @@ async function bootstrap(): Promise<void> {
     await app.init();
   } catch (err) {
     console.error('Failed to bootstrap application:', err);
-    process.exit(1);
+    // process.exit(1);
   }
 }
 
