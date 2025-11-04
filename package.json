@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@types/convict-format-with-validator": "6.0.5",
+    "@types/express": "5.0.5",
     "@types/inversify": "2.0.33",
     "@types/mongoose": "5.11.97",
     "@types/node": "20.19.22",
@@ -42,9 +43,13 @@
   "dependencies": {
     "@typegoose/typegoose": "11.5.0",
     "axios": "1.12.2",
+    "class-transformer": "0.5.1",
     "convict": "6.2.4",
     "convict-format-with-validator": "6.2.0",
     "dotenv": "17.2.3",
+    "express": "5.1.0",
+    "express-async-handler": "1.2.0",
+    "http-status-codes": "2.3.0",
     "inversify": "7.10.3",
     "mongoose": "7.5.3",
     "pino": "10.1.0",
