@@ -14,6 +14,7 @@ export type AppConfig = {
   dbPassword: string;
   dbUser: string;
   salt: string;
+  uploadDirectory: string;
 };
 
 export const config = convict<AppConfig>({
@@ -58,6 +59,12 @@ export const config = convict<AppConfig>({
     format: String,
     default: null as unknown as string,
     env: 'SALT'
+  },
+  uploadDirectory: {
+    doc: 'Path to directory where uploaded files will be stored',
+    format: String,
+    default: './upload',
+    env: 'UPLOAD_DIR'
   }
 });
 

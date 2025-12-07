@@ -12,6 +12,7 @@ import {OfferController} from './controller/implementation/OfferController.js';
 import {UserController} from './controller/implementation/UserController.js';
 import {CommentsController} from './controller/implementation/CommentsController.js';
 import {OfferService} from './core/services/OfferService.js';
+import path from 'node:path';
 
 @injectable()
 export class Application {
@@ -30,6 +31,8 @@ export class Application {
 
     this.expressApp.use(express.json({ limit: '1mb' }));
     this.expressApp.use(express.urlencoded({ extended: true }));
+
+    this.expressApp.use('/upload', express.static(path.resolve(process.env.UPLOAD_DIR ?? './upload')));
 
     this.expressApp.get(
       '/',
