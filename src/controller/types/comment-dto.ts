@@ -23,5 +23,11 @@ export class CommentCreateDTO {
 
   @Expose()
   public rating!: number;
+
+  @Expose()
+  public offerId!: string;
+
+  @Expose()
+  public userId?: number;
 }
 

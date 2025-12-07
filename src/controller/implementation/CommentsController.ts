@@ -1,0 +1,55 @@
+import asyncHandler from 'express-async-handler';
+import { Request, Response } from 'express';
+import { plainToInstance } from 'class-transformer';
+import { Controller } from '../controller.js';
+import { CommentCreateDTO, CommentDTO } from '../types/comment-dto.js';
+
+const comments: Array<any> = [];
+
+export class CommentsController extends Controller {
+  constructor() {
+    super('/comments');
+    this.registerRoutes();
+  }
+
+  public registerRoutes(): void {
+    this.router.get('/:offerId', asyncHandler(this.index.bind(this)));
+
+    this.router.post('/', asyncHandler(this.create.bind(this)));
+  }
+
+  private async index(req: Request, res: Response): Promise<void> {
+    const { offerId } = req.params;
+
+    const list = comments.filter((c) => c.offerId === offerId);
+
+    const dtos = plainToInstance(CommentDTO, list, {
+      excludeExtraneousValues: true
+    });
+
+    this.ok(res, dtos);
+  }
+
+  private async create(req: Request, res: Response): Promise<void> {
+    const dto = plainToInstance(CommentCreateDTO, req.body, {
+      excludeExtraneousValues: true
+    });
+
+    const created = {
+      id: (Math.random() * 1e18).toString(36),
+      text: dto.text,
+      rating: dto.rating,
+      offerId: dto.offerId,
+      userId: dto.userId ?? null, // пока нет авторизации
+      createdAt: new Date().toISOString()
+    };
+
+    comments.push(created);
+
+    const result = plainToInstance(CommentDTO, created, {
+      excludeExtraneousValues: true
+    });
+
+    this.created(res, result);
+  }
+}

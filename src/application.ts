@@ -10,6 +10,7 @@ import { StatusCodes, getReasonPhrase } from 'http-status-codes';
 import expressAsyncHandler from 'express-async-handler';
 import {OfferController} from './controller/implementation/OfferController.js';
 import {UserController} from './controller/implementation/UserController.js';
+import {CommentsController} from './controller/implementation/CommentsController.js';
 
 @injectable()
 export class Application {
@@ -41,9 +42,11 @@ export class Application {
 
     const userController = new UserController();
     const offerController = new OfferController();
+    const commentsController = new CommentsController();
 
     this.expressApp.use(`/api${ userController.path}`, userController.router);
     this.expressApp.use(`/api${ offerController.path}`, offerController.router);
+    this.expressApp.use(`/api${ commentsController.path}`, commentsController.router);
 
     this.expressApp.get(
       '/api/premium/:city',
