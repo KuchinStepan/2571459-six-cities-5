@@ -97,7 +97,7 @@ export class OfferController extends Controller {
       guests: dto.guests,
       price: dto.price,
       goods: dto.goods ?? [],
-      author: dto.author ?? null,
+      author: req.user?.id ?? null,
       commentsCount: 0,
       coordinates: dto.coordinates,
       createdAt: new Date().toISOString(),
@@ -128,6 +128,11 @@ export class OfferController extends Controller {
     const response = plainToInstance(OfferDTO, found, { excludeExtraneousValues: true });
     this.ok(res, response);
 
+  }
+
+  async index(req: Request, res: Response) {
+    const result = await this.offerService.list(req.user?.id);
+    return this.ok(res, result);
   }
 
   private async update(req: Request, res: Response): Promise<void> {

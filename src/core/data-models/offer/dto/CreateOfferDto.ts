@@ -85,10 +85,6 @@ export class CreateOfferDTO {
     goods!: Good[];
 
   @Expose()
-  @IsString()
-    authorId!: string;
-
-  @Expose()
   @ValidateNested()
   @Type(() => CoordinatesDTO)
     coordinates!: CoordinatesDTO;

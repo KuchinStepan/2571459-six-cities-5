@@ -15,6 +15,7 @@ import {OfferService} from './core/services/OfferService.js';
 import path from 'node:path';
 import fs from 'node:fs';
 import {UserService} from './core/services/UserService.js';
+import {JWTAuthMiddleware} from './controller/middlewares/implementation/JWTAuthMiddleware.js';
 
 @injectable()
 export class Application {
@@ -39,6 +40,11 @@ export class Application {
 
     this.expressApp.use(express.json({ limit: '1mb' }));
     this.expressApp.use(express.urlencoded({ extended: true }));
+    this.expressApp.use(
+      new JWTAuthMiddleware(
+        this.config.jwtSecret
+      ).execute
+    );
 
     this.expressApp.use('/upload', express.static(path.resolve(process.env.UPLOAD_DIR ?? './upload')));
 
