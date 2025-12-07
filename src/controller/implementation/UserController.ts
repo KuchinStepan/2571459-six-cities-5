@@ -5,6 +5,7 @@ import { Controller } from '../controller.js';
 import {UserDTO, UserLoginDTO, UserRegisterDTO} from '../types/user-dto.js';
 import {ValidateDtoMiddleware} from '../middlewares/implementation/ValidateDtoMiddleware.js';
 import {CreateUserDTO} from '../../core/data-models/user/dto/CreateUserDto.js';
+import {UploadFileMiddleware} from '../middlewares/implementation/UploadMiddlewareOptions.js';
 
 const users: Array<any> = [];
 
@@ -30,6 +31,18 @@ export class UserController extends Controller {
       handler: this.login,
       middlewares: [
         new ValidateDtoMiddleware(UserRegisterDTO)
+      ]
+    });
+
+    this.addRoute({
+      method: 'post',
+      path: '/avatar',
+      handler: this.uploadAvatar,
+      middlewares: [
+        new UploadFileMiddleware({
+          fieldName: 'avatar',
+          uploadDir: process.env.UPLOAD_DIR ?? './upload',
+        })
       ]
     });
 
@@ -59,6 +72,18 @@ export class UserController extends Controller {
 
     const response = plainToInstance(UserDTO, created, { excludeExtraneousValues: true });
     this.created(res, response);
+  }
+
+  private async uploadAvatar(req: Request, res: Response) {
+    const file = req.file;
+
+    if (!file) {
+      return this.badRequest(res, 'Invalid file');
+    }
+
+    return this.ok(res, {
+      avatarUrl: `/upload/${file.filename}`
+    });
   }
 
   private async login(req: Request, res: Response): Promise<void> {

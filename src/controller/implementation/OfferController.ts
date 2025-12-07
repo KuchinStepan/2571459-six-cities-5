@@ -4,14 +4,21 @@ import { plainToInstance } from 'class-transformer';
 import {Controller} from '../controller.js';
 import {OfferCreateDTO, OfferDTO} from '../types/offer-dto.js';
 import {ValidateDtoMiddleware} from '../middlewares/implementation/ValidateDtoMiddleware.js';
+import {ValidateObjectIdMiddleware} from '../middlewares/implementation/ObjectIdMiddleware.js';
+import {DocumentExistsMiddleware} from '../middlewares/implementation/DocumentExistsMiddleware.js';
+import {OfferService} from '../../core/services/OfferService.js';
+import {UploadFileMiddleware} from '../middlewares/implementation/UploadMiddlewareOptions.js';
 
 const offers: Array<any> = [];
 
 export class OfferController extends Controller {
-  constructor() {
+  constructor(offerService: OfferService) {
     super('/offers');
     this.registerRoutes();
+    this.offerService = offerService;
   }
+
+  private readonly offerService: OfferService;
 
   public registerRoutes(): void {
     this.router.get('/', asyncHandler(this.getAll.bind(this)));
@@ -30,11 +37,36 @@ export class OfferController extends Controller {
       path: '/:offerId',
       handler: this.update,
       middlewares: [
-        new ValidateDtoMiddleware(OfferCreateDTO)
+        new ValidateObjectIdMiddleware('offerId'),
+        new ValidateDtoMiddleware(OfferCreateDTO),
+        new DocumentExistsMiddleware('offerId', this.offerService)
       ]
     });
 
-    this.router.get('/:offerId', asyncHandler(this.getById.bind(this)));
+    this.addRoute({
+      method: 'get',
+      path: '/:offerId',
+      handler: this.getById,
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware('offerId', this.offerService)
+      ]
+    });
+
+    this.addRoute({
+      method: 'post',
+      path: '/photos',
+      handler: this.uploadPhotos,
+      middlewares: [
+        new UploadFileMiddleware({
+          fieldName: 'photos',
+          multiple: true,
+          maxCount: 6,
+          uploadDir: process.env.UPLOAD_DIR ?? './upload',
+        })
+      ]
+    });
+
     this.router.delete('/:offerId', asyncHandler(this.remove.bind(this)));
   }
 
@@ -76,6 +108,14 @@ export class OfferController extends Controller {
     const response = plainToInstance(OfferDTO, created, { excludeExtraneousValues: true });
     this.created(res, response);
 
+  }
+
+  private async uploadPhotos(req: Request, res: Response) {
+    const files = req.files as Express.Multer.File[];
+
+    const urls = files.map((file) => `/upload/${file.filename}`);
+
+    return this.ok(res, { photos: urls });
   }
 
   private async getById(req: Request, res: Response): Promise<void> {

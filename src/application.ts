@@ -11,6 +11,9 @@ import expressAsyncHandler from 'express-async-handler';
 import {OfferController} from './controller/implementation/OfferController.js';
 import {UserController} from './controller/implementation/UserController.js';
 import {CommentsController} from './controller/implementation/CommentsController.js';
+import {OfferService} from './core/services/OfferService.js';
+import path from 'node:path';
+import fs from 'node:fs';
 
 @injectable()
 export class Application {
@@ -21,13 +24,21 @@ export class Application {
     @inject(TYPES.DatabaseClient) private readonly dbClient: DatabaseClient,
     @inject(TYPES.Logger) private readonly logger: Logger,
     @inject(TYPES.ConfigProvider) private readonly config: ConfigProvider,
+    @inject(TYPES.OfferService) private readonly offerService: OfferService,
   ) {}
 
   public async init(): Promise<void> {
+    const uploadDir = this.config.uploadDirectory;
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
     this.expressApp = express();
 
     this.expressApp.use(express.json({ limit: '1mb' }));
     this.expressApp.use(express.urlencoded({ extended: true }));
+
+    this.expressApp.use('/upload', express.static(path.resolve(process.env.UPLOAD_DIR ?? './upload')));
 
     this.expressApp.get(
       '/',
@@ -41,7 +52,7 @@ export class Application {
     );
 
     const userController = new UserController();
-    const offerController = new OfferController();
+    const offerController = new OfferController(this.offerService);
     const commentsController = new CommentsController();
 
     this.expressApp.use(`/api${ userController.path}`, userController.router);
