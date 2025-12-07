@@ -8,17 +8,20 @@ import {ValidateObjectIdMiddleware} from '../middlewares/implementation/ObjectId
 import {DocumentExistsMiddleware} from '../middlewares/implementation/DocumentExistsMiddleware.js';
 import {OfferService} from '../../core/services/OfferService.js';
 import {UploadFileMiddleware} from '../middlewares/implementation/UploadMiddlewareOptions.js';
+import {AuthenticateMiddleware} from '../middlewares/implementation/AuthenticateMiddleware.js';
+import {UserService} from '../../core/services/UserService.js';
+import {ConfigProvider} from '../../config/config-provider.js';
 
 const offers: Array<any> = [];
 
 export class OfferController extends Controller {
-  constructor(offerService: OfferService) {
+  constructor(private readonly offerService: OfferService,
+              private readonly userService: UserService,
+              private readonly config: ConfigProvider) {
     super('/offers');
     this.registerRoutes();
     this.offerService = offerService;
   }
-
-  private readonly offerService: OfferService;
 
   public registerRoutes(): void {
     this.router.get('/', asyncHandler(this.getAll.bind(this)));
@@ -28,6 +31,7 @@ export class OfferController extends Controller {
       path: '/',
       handler: this.create,
       middlewares: [
+        new AuthenticateMiddleware(this.config, this.userService),
         new ValidateDtoMiddleware(OfferCreateDTO)
       ]
     });
@@ -37,6 +41,7 @@ export class OfferController extends Controller {
       path: '/:offerId',
       handler: this.update,
       middlewares: [
+        new AuthenticateMiddleware(this.config, this.userService),
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateDtoMiddleware(OfferCreateDTO),
         new DocumentExistsMiddleware('offerId', this.offerService)
@@ -58,6 +63,7 @@ export class OfferController extends Controller {
       path: '/photos',
       handler: this.uploadPhotos,
       middlewares: [
+        new AuthenticateMiddleware(this.config, this.userService),
         new UploadFileMiddleware({
           fieldName: 'photos',
           multiple: true,
@@ -97,7 +103,7 @@ export class OfferController extends Controller {
       guests: dto.guests,
       price: dto.price,
       goods: dto.goods ?? [],
-      author: dto.author ?? null,
+      author: req.user?.id ?? null,
       commentsCount: 0,
       coordinates: dto.coordinates,
       createdAt: new Date().toISOString(),
@@ -128,6 +134,11 @@ export class OfferController extends Controller {
     const response = plainToInstance(OfferDTO, found, { excludeExtraneousValues: true });
     this.ok(res, response);
 
+  }
+
+  async index(req: Request, res: Response) {
+    const result = await this.offerService.list(req.user?.id);
+    return this.ok(res, result);
   }
 
   private async update(req: Request, res: Response): Promise<void> {

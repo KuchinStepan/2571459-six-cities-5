@@ -6,11 +6,16 @@ import {UserDTO, UserLoginDTO, UserRegisterDTO} from '../types/user-dto.js';
 import {ValidateDtoMiddleware} from '../middlewares/implementation/ValidateDtoMiddleware.js';
 import {CreateUserDTO} from '../../core/data-models/user/dto/CreateUserDto.js';
 import {UploadFileMiddleware} from '../middlewares/implementation/UploadMiddlewareOptions.js';
+import { SignJWT } from 'jose';
+import {ConfigProvider} from '../../config/config-provider.js';
+import {UserService} from '../../core/services/UserService.js';
+import {AuthenticateMiddleware} from '../middlewares/implementation/AuthenticateMiddleware.js';
 
 const users: Array<any> = [];
 
 export class UserController extends Controller {
-  constructor() {
+  constructor(private readonly config: ConfigProvider,
+              private readonly userService: UserService,) {
     super('/users');
     this.registerRoutes();
   }
@@ -39,6 +44,7 @@ export class UserController extends Controller {
       path: '/avatar',
       handler: this.uploadAvatar,
       middlewares: [
+        new AuthenticateMiddleware(this.config, this.userService),
         new UploadFileMiddleware({
           fieldName: 'avatar',
           uploadDir: process.env.UPLOAD_DIR ?? './upload',
@@ -86,16 +92,25 @@ export class UserController extends Controller {
     });
   }
 
-  private async login(req: Request, res: Response): Promise<void> {
-    const dto = plainToInstance(UserLoginDTO, req.body, { excludeExtraneousValues: true });
+  private async login(req: Request, res: Response) {
+    const dto = plainToInstance(UserLoginDTO, req.body);
 
-    const user = users.find((u) => u.email === dto.email && u.password === dto.password);
+    const user = await this.userService.verifyCredentials(dto.email, dto.password);
     if (!user) {
-      this.unauthorized(res, 'Invalid email or password');
-      return;
+      return this.unauthorized(res, 'Invalid email or password');
     }
 
-    this.ok(res, { token: 'jwt-token' });
+    const secret = new TextEncoder().encode(this.config.jwtSecret);
+    const token = await new SignJWT({
+      email: user.email,
+      id: user.id,
+    })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setExpirationTime('7d')
+      .sign(secret);
+
+    return this.ok(res, { token });
   }
 
   private async status(_: Request, res: Response): Promise<void> {

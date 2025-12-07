@@ -14,6 +14,9 @@ import {CommentsController} from './controller/implementation/CommentsController
 import {OfferService} from './core/services/OfferService.js';
 import path from 'node:path';
 import fs from 'node:fs';
+import {UserService} from './core/services/UserService.js';
+import {JWTAuthMiddleware} from './controller/middlewares/implementation/JWTAuthMiddleware.js';
+import session from 'express-session';
 
 @injectable()
 export class Application {
@@ -25,6 +28,7 @@ export class Application {
     @inject(TYPES.Logger) private readonly logger: Logger,
     @inject(TYPES.ConfigProvider) private readonly config: ConfigProvider,
     @inject(TYPES.OfferService) private readonly offerService: OfferService,
+    @inject(TYPES.UserService) private readonly userService: UserService,
   ) {}
 
   public async init(): Promise<void> {
@@ -37,6 +41,22 @@ export class Application {
 
     this.expressApp.use(express.json({ limit: '1mb' }));
     this.expressApp.use(express.urlencoded({ extended: true }));
+
+    this.expressApp.use(
+      new JWTAuthMiddleware(
+        this.config.jwtSecret
+      ).execute
+    );
+    this.expressApp.post('/logout', (req, res) => {
+      req.session.destroy(() => {
+        res.status(200).json({ message: 'Logged out' });
+      });
+    });
+    this.expressApp.use(session({
+      secret: this.config.jwtSecret,
+      resave: false,
+      saveUninitialized: false,
+    }));
 
     this.expressApp.use('/upload', express.static(path.resolve(process.env.UPLOAD_DIR ?? './upload')));
 
@@ -51,8 +71,8 @@ export class Application {
       })
     );
 
-    const userController = new UserController();
-    const offerController = new OfferController(this.offerService);
+    const userController = new UserController(this.config, this.userService);
+    const offerController = new OfferController(this.offerService, this.userService, this.config);
     const commentsController = new CommentsController();
 
     this.expressApp.use(`/api${ userController.path}`, userController.router);

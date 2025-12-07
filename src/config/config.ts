@@ -15,6 +15,7 @@ export type AppConfig = {
   dbUser: string;
   salt: string;
   uploadDirectory: string;
+  jwtSecret: string;
 };
 
 export const config = convict<AppConfig>({
@@ -61,11 +62,17 @@ export const config = convict<AppConfig>({
     env: 'SALT'
   },
   uploadDirectory: {
-    doc: 'Path to directory where uploaded files will be stored',
+    doc: 'Путь до сохраненных файлов',
     format: String,
     default: './upload',
     env: 'UPLOAD_DIR'
-  }
+  },
+  jwtSecret: {
+    doc: 'Секрет для токена',
+    format: String,
+    default: null as unknown as string,
+    env: 'JWT_SECRET'
+  },
 });
 
 config.validate({ allowed: 'strict' });

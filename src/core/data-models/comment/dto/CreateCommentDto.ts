@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { IsString, Length, IsNumber, Min, Max, IsOptional } from 'class-validator';
+import { IsString, Length, IsNumber, Min, Max } from 'class-validator';
 
 export class CreateCommentDTO {
   @Expose()
@@ -12,11 +12,6 @@ export class CreateCommentDTO {
   @Min(1)
   @Max(5)
     rating!: number;
-
-  @Expose()
-  @IsString()
-  @IsOptional()
-    authorId?: string;
 
   @Expose()
   @IsString()

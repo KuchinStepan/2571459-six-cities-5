@@ -55,7 +55,7 @@ export class CommentsController extends Controller {
       text: dto.text,
       rating: dto.rating,
       offerId: dto.offerId,
-      userId: dto.authorId ?? null, // пока нет авторизации
+      userId: req.user?.id ?? null, // пока нет авторизации
       createdAt: new Date().toISOString()
     };
 

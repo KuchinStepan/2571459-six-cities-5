@@ -16,10 +16,10 @@ export class OfferService implements ExistsDocumentService {
     private readonly commentRepository: CommentRepository
   ) {}
 
-  public async create(dto: CreateOfferDTO): Promise<OfferEntity> {
+  public async create(dto: CreateOfferDTO, authorId: string): Promise<OfferEntity> {
     return this.offerRepository.create({
       ...dto,
-      author: dto.authorId,
+      author: authorId,
       commentsCount: 0,
       rating: 0
     });
@@ -69,5 +69,21 @@ export class OfferService implements ExistsDocumentService {
 
   async exists(id: string): Promise<boolean> {
     return Boolean(await OfferModel.exists({ _id: id }));
+  }
+
+  public async list(userId?: string) {
+    const offers = await this.offerRepository.findAll() || [];
+
+    if (!userId) {
+      return offers.map((o) => ({ ...o, isFavorite: false }));
+    }
+
+    const favorites = await this.offerRepository.findFavorites();
+    const favoriteIds = new Set(favorites.map((f) => f.id));
+
+    return offers.map((o) => ({
+      ...o,
+      isFavorite: favoriteIds.has(o.id),
+    }));
   }
 }

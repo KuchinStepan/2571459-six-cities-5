@@ -4,6 +4,7 @@ import {TYPES} from '../../autofac-types.js';
 import {UserEntity} from '../data-models/user/user.js';
 import {UpdateUserDTO} from '../data-models/user/dto/UpdateUserDto.js';
 import {CreateUserDTO} from '../data-models/user/dto/CreateUserDto.js';
+import bcrypt from 'bcrypt';
 
 @injectable()
 export class UserService {
@@ -26,5 +27,19 @@ export class UserService {
 
   public async findByEmail(email: string): Promise<UserEntity | null> {
     return this.userRepository.findByEmail(email);
+  }
+
+  public async verifyCredentials(email: string, password: string) {
+    const user = await this.findByEmail(email);
+    if (!user) {
+      return null;
+    }
+
+    const isCorrect = await bcrypt.compare(password, user.passwordHash);
+    if (!isCorrect) {
+      return null;
+    }
+
+    return user;
   }
 }

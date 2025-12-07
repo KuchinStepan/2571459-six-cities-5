@@ -5,7 +5,7 @@ export interface IUser {
   name: string;
   email: string;
   avatar?: string | null;
-  password: string;
+  passwordHash: string;
   type: UserType;
   createdAt?: Date;
   updatedAt?: Date;

@@ -8,6 +8,10 @@ export abstract class BaseRepository<T extends Document> implements IEntityRepos
     return this.model.findById(id).exec();
   }
 
+  public async findAll(): Promise<T[] | null> {
+    return this.model.find().exec();
+  }
+
   public async deleteById(id: string): Promise<T | null> {
     return this.model.findByIdAndDelete(id).exec();
   }
