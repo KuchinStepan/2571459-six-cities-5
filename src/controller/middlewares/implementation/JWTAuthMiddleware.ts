@@ -21,6 +21,7 @@ export class JWTAuthMiddleware {
       req.user = {
         id: payload.id as string,
         email: payload.email as string,
+        type: payload.type as 'pro' | 'ordinary'
       };
 
     } catch {

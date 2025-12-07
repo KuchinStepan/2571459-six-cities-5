@@ -15,11 +15,11 @@ export class CommentService {
     private readonly offerService: OfferService
   ) {}
 
-  public async create(dto: CreateCommentDTO): Promise<CommentEntity> {
+  public async create(dto: CreateCommentDTO, authorId: string): Promise<CommentEntity> {
     const comment = await this.commentRepository.create({
       text: dto.text,
       rating: dto.rating,
-      author: dto.authorId,
+      author: authorId,
       offer: dto.offerId,
     });
 

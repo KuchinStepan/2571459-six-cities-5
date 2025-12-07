@@ -9,6 +9,7 @@ import {UploadFileMiddleware} from '../middlewares/implementation/UploadMiddlewa
 import { SignJWT } from 'jose';
 import {ConfigProvider} from '../../config/config-provider.js';
 import {UserService} from '../../core/services/UserService.js';
+import {AuthenticateMiddleware} from '../middlewares/implementation/AuthenticateMiddleware.js';
 
 const users: Array<any> = [];
 
@@ -43,6 +44,7 @@ export class UserController extends Controller {
       path: '/avatar',
       handler: this.uploadAvatar,
       middlewares: [
+        new AuthenticateMiddleware(this.config, this.userService),
         new UploadFileMiddleware({
           fieldName: 'avatar',
           uploadDir: process.env.UPLOAD_DIR ?? './upload',
