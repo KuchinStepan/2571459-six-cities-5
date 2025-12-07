@@ -31,6 +31,10 @@ export class ConfigProvider {
     return config.get('salt');
   }
 
+  get jwtSecret() {
+    return config.get('jwtSecret');
+  }
+
   get mongoUri() {
     return `mongodb://${this.dbUser}:${this.dbPassword}@${this.dbHost}:${this.dbPort}/${this.dbName}?authSource=admin`;
   }

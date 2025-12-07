@@ -14,6 +14,7 @@ import {CommentsController} from './controller/implementation/CommentsController
 import {OfferService} from './core/services/OfferService.js';
 import path from 'node:path';
 import fs from 'node:fs';
+import {UserService} from './core/services/UserService.js';
 
 @injectable()
 export class Application {
@@ -25,6 +26,7 @@ export class Application {
     @inject(TYPES.Logger) private readonly logger: Logger,
     @inject(TYPES.ConfigProvider) private readonly config: ConfigProvider,
     @inject(TYPES.OfferService) private readonly offerService: OfferService,
+    @inject(TYPES.UserService) private readonly userService: UserService,
   ) {}
 
   public async init(): Promise<void> {
@@ -51,7 +53,7 @@ export class Application {
       })
     );
 
-    const userController = new UserController();
+    const userController = new UserController(this.config, this.userService);
     const offerController = new OfferController(this.offerService);
     const commentsController = new CommentsController();
 

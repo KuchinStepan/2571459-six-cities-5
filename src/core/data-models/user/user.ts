@@ -12,7 +12,7 @@ export class UserEntity extends Document {
   public avatar?: string;
 
   @prop({ required: true })
-  public password!: string;
+  public passwordHash!: string;
 
   @prop({ required: true, enum: ['ordinary', 'pro'] })
   public type!: 'ordinary' | 'pro';
