@@ -1,7 +1,7 @@
-// src/controllers/Controller.js
 import { Router, Response } from 'express';
 import { StatusCodes, getReasonPhrase } from 'http-status-codes';
 import {IController} from './IController.js';
+import {RouteDefinition} from './route-definition.js';
 
 export abstract class Controller implements IController {
   public readonly router: Router;
@@ -10,6 +10,16 @@ export abstract class Controller implements IController {
   }
 
   abstract registerRoutes(): void;
+
+  public addRoute(route: RouteDefinition): void {
+    const middlewares = route.middlewares?.map((mw) => mw.execute.bind(mw)) ?? [];
+
+    this.router[route.method](
+      route.path,
+      ...middlewares,
+      route.handler.bind(this)
+    );
+  }
 
   protected ok<T>(res: Response, dto?: T) {
     if (dto !== undefined) {

@@ -2,8 +2,8 @@ import { inject, injectable } from 'inversify';
 import {CommentRepository} from '../data-models/comment/CommentRepository.js';
 import {TYPES} from '../../autofac-types.js';
 import {OfferService} from './OfferService.js';
-import {CreateCommentDto} from '../data-models/comment/dto/CreateCommentDto.js';
 import {CommentEntity} from '../data-models/comment/comment.js';
+import {CreateCommentDTO} from '../data-models/comment/dto/CreateCommentDto.js';
 
 
 @injectable()
@@ -15,7 +15,7 @@ export class CommentService {
     private readonly offerService: OfferService
   ) {}
 
-  public async create(dto: CreateCommentDto): Promise<CommentEntity> {
+  public async create(dto: CreateCommentDTO): Promise<CommentEntity> {
     const comment = await this.commentRepository.create({
       text: dto.text,
       rating: dto.rating,

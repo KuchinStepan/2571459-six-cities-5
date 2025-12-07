@@ -1,9 +1,9 @@
 import { inject, injectable } from 'inversify';
 import {UserRepository} from '../data-models/user/UserRepository.js';
 import {TYPES} from '../../autofac-types.js';
-import {CreateUserDto} from '../data-models/user/dto/CreateUserDto.js';
 import {UserEntity} from '../data-models/user/user.js';
-import {UpdateUserDto} from '../data-models/user/dto/UpdateUserDto.js';
+import {UpdateUserDTO} from '../data-models/user/dto/UpdateUserDto.js';
+import {CreateUserDTO} from '../data-models/user/dto/CreateUserDto.js';
 
 @injectable()
 export class UserService {
@@ -12,11 +12,11 @@ export class UserService {
     private readonly userRepository: UserRepository
   ) {}
 
-  public async create(dto: CreateUserDto): Promise<UserEntity> {
+  public async create(dto: CreateUserDTO): Promise<UserEntity> {
     return this.userRepository.create(dto);
   }
 
-  public async update(id: string, dto: UpdateUserDto): Promise<UserEntity | null> {
+  public async update(id: string, dto: UpdateUserDTO): Promise<UserEntity | null> {
     return this.userRepository.updateById(id, dto);
   }
 
