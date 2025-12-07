@@ -1,8 +1,8 @@
-import asyncHandler from 'express-async-handler';
 import { Request, Response } from 'express';
 import { plainToInstance } from 'class-transformer';
 import { Controller } from '../controller.js';
 import { CommentCreateDTO, CommentDTO } from '../types/comment-dto.js';
+import {ValidateObjectIdMiddleware} from '../middlewares/implementation/ObjectIdMiddleware.js';
 
 const comments: Array<any> = [];
 
@@ -13,9 +13,19 @@ export class CommentsController extends Controller {
   }
 
   public registerRoutes(): void {
-    this.router.get('/:offerId', asyncHandler(this.index.bind(this)));
+    this.addRoute({
+      path: '/:offerId',
+      method: 'post',
+      handler: this.create,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')]
+    });
 
-    this.router.post('/', asyncHandler(this.create.bind(this)));
+    this.addRoute({
+      path: '/:offerId',
+      method: 'get',
+      handler: this.index,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')]
+    });
   }
 
   private async index(req: Request, res: Response): Promise<void> {
