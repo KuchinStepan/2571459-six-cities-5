@@ -7,6 +7,7 @@ import {ValidateDtoMiddleware} from '../middlewares/implementation/ValidateDtoMi
 import {ValidateObjectIdMiddleware} from '../middlewares/implementation/ObjectIdMiddleware.js';
 import {DocumentExistsMiddleware} from '../middlewares/implementation/DocumentExistsMiddleware.js';
 import {OfferService} from '../../core/services/OfferService.js';
+import {UploadFileMiddleware} from '../middlewares/implementation/UploadMiddlewareOptions.js';
 
 const offers: Array<any> = [];
 
@@ -52,6 +53,20 @@ export class OfferController extends Controller {
       ]
     });
 
+    this.addRoute({
+      method: 'post',
+      path: '/photos',
+      handler: this.uploadPhotos,
+      middlewares: [
+        new UploadFileMiddleware({
+          fieldName: 'photos',
+          multiple: true,
+          maxCount: 6,
+          uploadDir: process.env.UPLOAD_DIR ?? './upload',
+        })
+      ]
+    });
+
     this.router.delete('/:offerId', asyncHandler(this.remove.bind(this)));
   }
 
@@ -93,6 +108,14 @@ export class OfferController extends Controller {
     const response = plainToInstance(OfferDTO, created, { excludeExtraneousValues: true });
     this.created(res, response);
 
+  }
+
+  private async uploadPhotos(req: Request, res: Response) {
+    const files = req.files as Express.Multer.File[];
+
+    const urls = files.map((file) => `/upload/${file.filename}`);
+
+    return this.ok(res, { photos: urls });
   }
 
   private async getById(req: Request, res: Response): Promise<void> {

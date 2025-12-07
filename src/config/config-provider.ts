@@ -34,4 +34,8 @@ export class ConfigProvider {
   get mongoUri() {
     return `mongodb://${this.dbUser}:${this.dbPassword}@${this.dbHost}:${this.dbPort}/${this.dbName}?authSource=admin`;
   }
+
+  get uploadDirectory() {
+    return config.get('uploadDirectory');
+  }
 }

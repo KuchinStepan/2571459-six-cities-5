@@ -13,6 +13,7 @@ import {UserController} from './controller/implementation/UserController.js';
 import {CommentsController} from './controller/implementation/CommentsController.js';
 import {OfferService} from './core/services/OfferService.js';
 import path from 'node:path';
+import fs from 'node:fs';
 
 @injectable()
 export class Application {
@@ -27,6 +28,11 @@ export class Application {
   ) {}
 
   public async init(): Promise<void> {
+    const uploadDir = this.config.uploadDirectory;
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
     this.expressApp = express();
 
     this.expressApp.use(express.json({ limit: '1mb' }));
