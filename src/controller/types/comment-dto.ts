@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { IsString, Length, IsNumber, Min, Max, IsOptional } from 'class-validator';
 
 export class CommentDTO {
   @Expose()
@@ -17,17 +18,24 @@ export class CommentDTO {
   public createdAt!: string;
 }
 
-export class CommentCreateDTO {
+export class CreateCommentDTO {
   @Expose()
-  public text!: string;
+  @IsString()
+  @Length(5, 1024)
+    text!: string;
 
   @Expose()
-  public rating!: number;
+  @IsNumber()
+  @Min(1)
+  @Max(5)
+    rating!: number;
 
   @Expose()
-  public offerId!: string;
+  @IsString()
+  @IsOptional()
+    authorId?: string;
 
   @Expose()
-  public userId?: number;
+  @IsString()
+    offerId!: string;
 }
-

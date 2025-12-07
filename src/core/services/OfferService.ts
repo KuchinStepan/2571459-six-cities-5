@@ -3,8 +3,8 @@ import {OfferEntity} from '../data-models/offer/offer.js';
 import {TYPES} from '../../autofac-types.js';
 import {OfferRepository} from '../data-models/offer/OfferRepository.js';
 import {CommentRepository} from '../data-models/comment/CommentRepository.js';
-import {CreateOfferDto} from '../data-models/offer/dto/CreateOfferDto.js';
-import {UpdateOfferDto} from '../data-models/offer/dto/UpdateOfferDto.js';
+import {CreateOfferDTO} from '../data-models/offer/dto/CreateOfferDto.js';
+import {UpdateOfferDTO} from '../data-models/offer/dto/UpdateOfferDto.js';
 
 @injectable()
 export class OfferService {
@@ -15,7 +15,7 @@ export class OfferService {
     private readonly commentRepository: CommentRepository
   ) {}
 
-  public async create(dto: CreateOfferDto): Promise<OfferEntity> {
+  public async create(dto: CreateOfferDTO): Promise<OfferEntity> {
     return this.offerRepository.create({
       ...dto,
       author: dto.authorId,
@@ -24,7 +24,7 @@ export class OfferService {
     });
   }
 
-  public async update(id: string, dto: UpdateOfferDto): Promise<OfferEntity | null> {
+  public async update(id: string, dto: UpdateOfferDTO): Promise<OfferEntity | null> {
     return this.offerRepository.updateById(id, dto);
   }
 

@@ -3,6 +3,8 @@ import { Request, Response } from 'express';
 import { plainToInstance } from 'class-transformer';
 import { Controller } from '../controller.js';
 import {UserDTO, UserLoginDTO, UserRegisterDTO} from '../types/user-dto.js';
+import {ValidateDtoMiddleware} from '../middlewares/implementation/ValidateDtoMiddleware.js';
+import {CreateUserDTO} from '../../core/data-models/user/dto/CreateUserDto.js';
 
 const users: Array<any> = [];
 
@@ -13,8 +15,24 @@ export class UserController extends Controller {
   }
 
   public registerRoutes(): void {
-    this.router.post('/register', asyncHandler(this.register.bind(this)));
-    this.router.post('/login', asyncHandler(this.login.bind(this)));
+    this.addRoute({
+      method: 'post',
+      path: '/register',
+      handler: this.register,
+      middlewares: [
+        new ValidateDtoMiddleware(CreateUserDTO)
+      ]
+    });
+
+    this.addRoute({
+      method: 'post',
+      path: '/login',
+      handler: this.login,
+      middlewares: [
+        new ValidateDtoMiddleware(UserRegisterDTO)
+      ]
+    });
+
     this.router.get('/status', asyncHandler(this.status.bind(this)));
   }
 

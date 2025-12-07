@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
 import { plainToInstance } from 'class-transformer';
 import { Controller } from '../controller.js';
-import { CommentCreateDTO, CommentDTO } from '../types/comment-dto.js';
+import { CommentDTO } from '../types/comment-dto.js';
 import {ValidateObjectIdMiddleware} from '../middlewares/implementation/ObjectIdMiddleware.js';
+import {ValidateDtoMiddleware} from '../middlewares/implementation/ValidateDtoMiddleware.js';
+import {CreateCommentDTO} from '../../core/data-models/comment/dto/CreateCommentDto.js';
 
 const comments: Array<any> = [];
 
@@ -17,7 +19,10 @@ export class CommentsController extends Controller {
       path: '/:offerId',
       method: 'post',
       handler: this.create,
-      middlewares: [new ValidateObjectIdMiddleware('offerId')]
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new ValidateDtoMiddleware(CreateCommentDTO)
+      ]
     });
 
     this.addRoute({
@@ -41,7 +46,7 @@ export class CommentsController extends Controller {
   }
 
   private async create(req: Request, res: Response): Promise<void> {
-    const dto = plainToInstance(CommentCreateDTO, req.body, {
+    const dto = plainToInstance(CreateCommentDTO, req.body, {
       excludeExtraneousValues: true
     });
 
@@ -50,7 +55,7 @@ export class CommentsController extends Controller {
       text: dto.text,
       rating: dto.rating,
       offerId: dto.offerId,
-      userId: dto.userId ?? null, // пока нет авторизации
+      userId: dto.authorId ?? null, // пока нет авторизации
       createdAt: new Date().toISOString()
     };
 

@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { plainToInstance } from 'class-transformer';
 import {Controller} from '../controller.js';
 import {OfferCreateDTO, OfferDTO} from '../types/offer-dto.js';
+import {ValidateDtoMiddleware} from '../middlewares/implementation/ValidateDtoMiddleware.js';
 
 const offers: Array<any> = [];
 
@@ -14,9 +15,26 @@ export class OfferController extends Controller {
 
   public registerRoutes(): void {
     this.router.get('/', asyncHandler(this.getAll.bind(this)));
-    this.router.post('/', asyncHandler(this.create.bind(this)));
+
+    this.addRoute({
+      method: 'post',
+      path: '/',
+      handler: this.create,
+      middlewares: [
+        new ValidateDtoMiddleware(OfferCreateDTO)
+      ]
+    });
+
+    this.addRoute({
+      method: 'patch',
+      path: '/:offerId',
+      handler: this.update,
+      middlewares: [
+        new ValidateDtoMiddleware(OfferCreateDTO)
+      ]
+    });
+
     this.router.get('/:offerId', asyncHandler(this.getById.bind(this)));
-    this.router.patch('/:offerId', asyncHandler(this.update.bind(this)));
     this.router.delete('/:offerId', asyncHandler(this.remove.bind(this)));
   }
 
