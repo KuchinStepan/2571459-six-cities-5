@@ -11,6 +11,7 @@ import expressAsyncHandler from 'express-async-handler';
 import {OfferController} from './controller/implementation/OfferController.js';
 import {UserController} from './controller/implementation/UserController.js';
 import {CommentsController} from './controller/implementation/CommentsController.js';
+import {OfferService} from './core/services/OfferService.js';
 
 @injectable()
 export class Application {
@@ -21,6 +22,7 @@ export class Application {
     @inject(TYPES.DatabaseClient) private readonly dbClient: DatabaseClient,
     @inject(TYPES.Logger) private readonly logger: Logger,
     @inject(TYPES.ConfigProvider) private readonly config: ConfigProvider,
+    @inject(TYPES.OfferService) private readonly offerService: OfferService,
   ) {}
 
   public async init(): Promise<void> {
@@ -41,7 +43,7 @@ export class Application {
     );
 
     const userController = new UserController();
-    const offerController = new OfferController();
+    const offerController = new OfferController(this.offerService);
     const commentsController = new CommentsController();
 
     this.expressApp.use(`/api${ userController.path}`, userController.router);

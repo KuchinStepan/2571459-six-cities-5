@@ -1,13 +1,14 @@
 import { inject, injectable } from 'inversify';
-import {OfferEntity} from '../data-models/offer/offer.js';
+import {OfferEntity, OfferModel} from '../data-models/offer/offer.js';
 import {TYPES} from '../../autofac-types.js';
 import {OfferRepository} from '../data-models/offer/OfferRepository.js';
 import {CommentRepository} from '../data-models/comment/CommentRepository.js';
 import {CreateOfferDTO} from '../data-models/offer/dto/CreateOfferDto.js';
 import {UpdateOfferDTO} from '../data-models/offer/dto/UpdateOfferDto.js';
+import {ExistsDocumentService} from './IExistsDocumentService.js';
 
 @injectable()
-export class OfferService {
+export class OfferService implements ExistsDocumentService {
   constructor(
     @inject(TYPES.OfferRepository)
     private readonly offerRepository: OfferRepository,
@@ -64,5 +65,9 @@ export class OfferService {
     const rounded = Math.round(avgRating * 10) / 10;
 
     await this.offerRepository.updateById(offerId, { rating: rounded });
+  }
+
+  async exists(id: string): Promise<boolean> {
+    return Boolean(await OfferModel.exists({ _id: id }));
   }
 }

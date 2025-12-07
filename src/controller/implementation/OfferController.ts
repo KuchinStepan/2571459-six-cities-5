@@ -4,14 +4,20 @@ import { plainToInstance } from 'class-transformer';
 import {Controller} from '../controller.js';
 import {OfferCreateDTO, OfferDTO} from '../types/offer-dto.js';
 import {ValidateDtoMiddleware} from '../middlewares/implementation/ValidateDtoMiddleware.js';
+import {ValidateObjectIdMiddleware} from '../middlewares/implementation/ObjectIdMiddleware.js';
+import {DocumentExistsMiddleware} from '../middlewares/implementation/DocumentExistsMiddleware.js';
+import {OfferService} from '../../core/services/OfferService.js';
 
 const offers: Array<any> = [];
 
 export class OfferController extends Controller {
-  constructor() {
+  constructor(offerService: OfferService) {
     super('/offers');
     this.registerRoutes();
+    this.offerService = offerService;
   }
+
+  private readonly offerService: OfferService;
 
   public registerRoutes(): void {
     this.router.get('/', asyncHandler(this.getAll.bind(this)));
@@ -30,11 +36,22 @@ export class OfferController extends Controller {
       path: '/:offerId',
       handler: this.update,
       middlewares: [
-        new ValidateDtoMiddleware(OfferCreateDTO)
+        new ValidateObjectIdMiddleware('offerId'),
+        new ValidateDtoMiddleware(OfferCreateDTO),
+        new DocumentExistsMiddleware('offerId', this.offerService)
       ]
     });
 
-    this.router.get('/:offerId', asyncHandler(this.getById.bind(this)));
+    this.addRoute({
+      method: 'get',
+      path: '/:offerId',
+      handler: this.getById,
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware('offerId', this.offerService)
+      ]
+    });
+
     this.router.delete('/:offerId', asyncHandler(this.remove.bind(this)));
   }
 
